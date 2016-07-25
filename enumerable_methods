@@ -30,4 +30,20 @@ module Enumerable
     return new_array
   end
 
+  def my_all?
+    i = 0
+    truth = []
+    while i < self.length
+      if yield(self[i])
+        truth.push(self[i])
+      end
+      i+=1
+    end
+    if truth == self
+      return true
+    else
+      return false
+    end
+  end
+
 end
