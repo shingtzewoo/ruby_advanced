@@ -56,4 +56,39 @@ module Enumerable
     end
   end
 
+  def my_none?
+    i = 0
+    false_array = []
+    while i < self.length
+      if yield(self[i])
+      else
+        false_array.push(self[i])
+      end
+      i+=1
+    end
+    if self.length == false_array.length
+      return true
+    else
+      return false
+    end
+  end
+
+  def my_count(*obj)
+    i = 0
+    answer_array = []
+    while i < self.length
+      if block_given?
+        if yield(self[i])
+          answer_array.push(self[i])
+        end
+      elsif obj.empty? == false
+          answer_array.push(self[i]) if obj.include?(self[i])
+      else
+        answer_array.push(self[i])
+      end
+      i+=1
+    end
+    return answer_array.length
+  end
+
 end
