@@ -91,4 +91,51 @@ module Enumerable
     return answer_array.length
   end
 
+  def my_map
+    i = 0
+    answer_array = []
+    while i < self.length
+      if block_given?
+          answer_array.push(yield(self[i]))
+      else
+        return enum_for(:my_map)
+      end
+      i+=1
+    end
+    return answer_array
+  end
+
+  def my_inject(arg1, *arg2)
+    i = 0
+    sum = 0
+    while i < self.length
+      if block_given?
+        if arg1.empty? == false
+          arg1 += yield(self[i])
+          sum = arg1
+        else
+          sum += yield(self[i])
+        end
+      elsif (arg1.empty? == false && arg2.empty? == false)
+        if arg1.is_a?Numeric && arg2.is_a?Symbol
+          if arg2.to_s == "+"
+            arg1 += self[i]
+            sum = arg1
+          elsif arg2.to_s == "/"
+            arg1 /= self[i]
+            sum = arg1
+          elsif arg2.to_s == "*"
+            arg1 *= self[i]
+            sum = arg1
+          elsif arg2.to_s == "-"
+            arg1 -= self[i]
+            sum = arg1
+          end
+        end
+      end
+      i+=1
+    end
+    return sum
+  end
+
 end
