@@ -30,7 +30,7 @@ def bubble_sort_by array
     if j > array.length
       i = 0
       j = 1
-      if array == array.sort
+      if array == array.sort.reverse
         break
       end
     end
