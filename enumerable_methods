@@ -10,34 +10,28 @@ module Enumerable
   end
 
   def my_each_with_index
-    i = 0
-    while i < self.length
-      yield(self[i], self.index(self[i]))
-      i+=1
+    self.my_each do |i|
+      yield(i, self.index(i))
     end
     return self
   end
 
   def my_select
-    i = 0
     new_array = []
-    while i < self.length
-      if yield(self[i])
-        new_array.push(self[i])
+    self.my_each do |i|
+      if yield(i)
+        new_array.push(i)
       end
-      i+=1
     end
     return new_array
   end
 
   def my_all?
-    i = 0
     truth = []
-    while i < self.length
-      if yield(self[i])
-        truth.push(self[i])
+    self.my_each do |i|
+      if yield(i)
+        truth.push(i)
       end
-      i+=1
     end
     if truth == self
       return true
@@ -47,9 +41,8 @@ module Enumerable
   end
 
   def my_any?
-    i = 0
-    while i < self.length
-      if yield(self[i])
+    self.my_each do |i|
+      if yield(i)
         return true
       end
       i+=1
@@ -57,14 +50,12 @@ module Enumerable
   end
 
   def my_none?
-    i = 0
     false_array = []
-    while i < self.length
-      if yield(self[i])
+    self.my_each do |i|
+      if yield(i)
       else
-        false_array.push(self[i])
+        false_array.push(i)
       end
-      i+=1
     end
     if self.length == false_array.length
       return true
@@ -74,64 +65,52 @@ module Enumerable
   end
 
   def my_count(*obj)
-    i = 0
     answer_array = []
-    while i < self.length
+    self.my_each do |i|
       if block_given?
-        if yield(self[i])
-          answer_array.push(self[i])
+        if yield(i)
+          answer_array.push(i)
         end
       elsif obj.empty? == false
-          answer_array.push(self[i]) if obj.include?(self[i])
+          answer_array.push(i) if obj.include?(i)
       else
-        answer_array.push(self[i])
+        answer_array.push(i)
       end
-      i+=1
     end
     return answer_array.length
   end
 
-  def my_map
-    i = 0
+  def my_map(&proc)
     answer_array = []
-    while i < self.length
-      if block_given?
-          answer_array.push(yield(self[i]))
+    self.my_each do |i|
+      if proc.nil? == false
+          answer_array.push(proc.call(i))
+      elsif block_given
+        answer_array.push(yield(i))
       else
         return enum_for(:my_map)
       end
-      i+=1
     end
     return answer_array
   end
 
-  def my_inject(*arg1)
-    i = 0
-    sum = 0
-    while i < self.length
-      if block_given?
-        if arg1.empty? == false
-          sum = yield(self[i], sum)
-          sum = arg1[0] + sum
-        else
-          sum = yield(self[i], sum)
-        end
-      elsif (arg1.empty? == false)
-        if (arg1[0] == Numeric) && (arg1[1] == Symbol)
-          if arg1[1].to_s.include?("+")
-           sum = arg1[0] + self[i]
-          elsif arg1[1].to_s.include?("/")
-            sum = arg1[0] + self[i]
-          elsif arg1[1].to_s.include?("*")
-            sum = arg1[0] + self[i]
-          elsif arg1[1].to_s.include?("-")
-            sum = arg1[0] + self[i]
-          end
-        end
-      end
-      i+=1
+  def my_inject(sum=nil)
+    if sum == nil
+      sum = self[0]
+      x = 1
+    else
+      x = 0
+    end
+    self[x..self.size].my_each do |i|
+      sum = (yield sum, i)
     end
     return sum
   end
 
 end
+
+  def multiply_els(array)
+    array.my_inject do |num, sum|
+      num * sum
+    end
+  end
