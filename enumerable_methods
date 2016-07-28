@@ -105,31 +105,27 @@ module Enumerable
     return answer_array
   end
 
-  def my_inject(arg1, *arg2)
+  def my_inject(*arg1)
     i = 0
     sum = 0
     while i < self.length
       if block_given?
         if arg1.empty? == false
-          arg1 += yield(self[i])
-          sum = arg1
+          sum = yield(self[i], sum)
+          sum = arg1[0] + sum
         else
-          sum += yield(self[i])
+          sum = yield(self[i], sum)
         end
-      elsif (arg1.empty? == false && arg2.empty? == false)
-        if arg1.is_a?Numeric && arg2.is_a?Symbol
-          if arg2.to_s == "+"
-            arg1 += self[i]
-            sum = arg1
-          elsif arg2.to_s == "/"
-            arg1 /= self[i]
-            sum = arg1
-          elsif arg2.to_s == "*"
-            arg1 *= self[i]
-            sum = arg1
-          elsif arg2.to_s == "-"
-            arg1 -= self[i]
-            sum = arg1
+      elsif (arg1.empty? == false)
+        if (arg1[0] == Numeric) && (arg1[1] == Symbol)
+          if arg1[1].to_s.include?("+")
+           sum = arg1[0] + self[i]
+          elsif arg1[1].to_s.include?("/")
+            sum = arg1[0] + self[i]
+          elsif arg1[1].to_s.include?("*")
+            sum = arg1[0] + self[i]
+          elsif arg1[1].to_s.include?("-")
+            sum = arg1[0] + self[i]
           end
         end
       end
